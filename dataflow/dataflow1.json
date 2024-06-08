@@ -40,6 +40,9 @@
 				},
 				{
 					"name": "lookup1"
+				},
+				{
+					"name": "split1"
 				}
 			],
 			"scriptLines": [
@@ -100,7 +103,9 @@
 				"     multiple: false,",
 				"     pickup: 'any',",
 				"     broadcast: 'auto')~> lookup1",
-				"lookup1 sink(allowSchemaDrift: true,",
+				"lookup1 split(cases_country=='Africa',",
+				"     disjoint: false) ~> split1@(Africa, Others)",
+				"split1@Others sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     umask: 0022,",
 				"     preCommands: [],",
