@@ -1,0 +1,50 @@
+{
+	"name": "ecdc_csv_dl",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "shargegaintrialsa_link",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"secret_name": {
+					"value": "@dataset().secret_name",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"secret_name": {
+				"type": "string",
+				"defaultValue": "sharegaintrialsa-accountkey"
+			},
+			"file_name": {
+				"type": "string",
+				"defaultValue": "cases_deaths.csv"
+			},
+			"folder_name": {
+				"type": "string",
+				"defaultValue": "input-data/raw"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().file_name",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().folder_name",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

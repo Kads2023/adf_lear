@@ -1,0 +1,58 @@
+{
+	"name": "Json1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "shargegaintrialsa_link",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"secret_name": {
+					"value": "@dataset().secret_name",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"secret_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "github_ecdc_file_list.json",
+				"fileSystem": "input-data"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"secretName": {
+					"type": "string"
+				},
+				"targetFolder": {
+					"type": "string"
+				},
+				"sourceBaseURL": {
+					"type": "string"
+				},
+				"filedetails": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"sourceRelativeURL": {
+								"type": "string"
+							},
+							"FileName": {
+								"type": "string"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

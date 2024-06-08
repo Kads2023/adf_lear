@@ -1,0 +1,113 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "cases_and_deaths_csv_dl",
+						"type": "DatasetReference"
+					},
+					"name": "casesAndDeathSource"
+				},
+				{
+					"dataset": {
+						"referenceName": "country_lookup_csv",
+						"type": "DatasetReference"
+					},
+					"name": "countryLookup"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText2",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "pivot1"
+				},
+				{
+					"name": "lookup1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          country as string,",
+				"          country_code as string,",
+				"          continent as string,",
+				"          population as integer,",
+				"          indicator as string,",
+				"          daily_count as short,",
+				"          date as date,",
+				"          rate_14_day as double,",
+				"          source as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> casesAndDeathSource",
+				"source(output(",
+				"          country as string,",
+				"          country_code_2_digit as string,",
+				"          country_code_3_digit as string,",
+				"          continent as string,",
+				"          population as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> countryLookup",
+				"casesAndDeathSource select(mapColumn(",
+				"          each(match(name=='date'),",
+				"               'reported_'+'date' = $$),",
+				"          each(match(true()),",
+				"               'cases_'+$$ = $$)",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 select(mapColumn(",
+				"          reported_date,",
+				"          cases_country,",
+				"          cases_country_code,",
+				"          cases_population,",
+				"          cases_indicator,",
+				"          cases_daily_count,",
+				"          cases_source",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 pivot(groupBy(cases_country,",
+				"          cases_country_code,",
+				"          cases_population,",
+				"          cases_source,",
+				"          reported_date,",
+				"          cases_special_country = cases_country+cases_country_code),",
+				"     pivotBy(cases_indicator),",
+				"     count = sum(cases_daily_count),",
+				"     columnNaming: '$N$V',",
+				"     lateral: true) ~> pivot1",
+				"pivot1, countryLookup lookup(cases_country == country,",
+				"     multiple: false,",
+				"     pickup: 'any',",
+				"     broadcast: 'auto')~> lookup1",
+				"lookup1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}

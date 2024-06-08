@@ -1,0 +1,9 @@
+{
+	"name": "sharegaintrial-adf",
+	"location": "uksouth",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "6ebe3359-4a98-422a-a1f7-3139686a97dd",
+		"tenantId": "ec30d68f-4385-4f5d-b165-33ac468481a2"
+	}
+}

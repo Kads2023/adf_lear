@@ -1,0 +1,260 @@
+{
+	"name": "trial-copy",
+	"properties": {
+		"activities": [
+			{
+				"name": "copy_data_from_adls",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"wildcardFolderPath": {
+								"value": "@pipeline().parameters.in_folder_name",
+								"type": "Expression"
+							},
+							"wildcardFileName": {
+								"value": "@pipeline().parameters.in_file_suffix",
+								"type": "Expression"
+							},
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings",
+							"copyBehavior": "PreserveHierarchy"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Month",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Month",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": " \"Average\"",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": " Average",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": " \"2005\"",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": " 2005",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": " \"2006\"",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": " 2006",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": " \"2007\"",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": " 2007",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": " \"2008\"",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": " 2008",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": " \"2009\"",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": " 2009",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": " \"2010\"",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": " 2010\"",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": " \"2011\"",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": " 2011",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": " \"2012\"",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": " 2012",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": " \"2013\"",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": " 2013",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": " \"2014\"",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": " 2014",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": " \"2015\"",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": " 2015",
+									"physicalType": "UTF8"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DelimitedText1",
+						"type": "DatasetReference",
+						"parameters": {
+							"secret_name": {
+								"value": "@pipeline().parameters.secret_name",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Parquet1",
+						"type": "DatasetReference",
+						"parameters": {
+							"secret_name": {
+								"value": "@pipeline().parameters.secret_name",
+								"type": "Expression"
+							},
+							"folder_path": {
+								"value": "@pipeline().parameters.out_folder_path",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"secret_name": {
+				"type": "string",
+				"defaultValue": "sharegaintrialsa-accountkey"
+			},
+			"in_folder_name": {
+				"type": "string"
+			},
+			"in_file_suffix": {
+				"type": "string"
+			},
+			"out_folder_path": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"file_details": {
+				"type": "Array"
+			},
+			"file_name": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-06-08T06:06:02Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,159 @@
+{
+	"name": "ecdc_pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "for_each_file",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "getConfigFiles",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('getConfigFiles').output.firstRow.filedetails",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "copy_ecdc_data",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings",
+										"copyBehavior": "PreserveHierarchy"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "Data_from_github",
+									"type": "DatasetReference",
+									"parameters": {
+										"base_url": {
+											"value": "@activity('getConfigFiles').output.firstRow.sourceBaseURL",
+											"type": "Expression"
+										},
+										"relative_url": {
+											"value": "@item().sourceRelativeURL",
+											"type": "Expression"
+										},
+										"file_name": {
+											"value": "@item().FileName",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ecdc_csv_dl",
+									"type": "DatasetReference",
+									"parameters": {
+										"secret_name": {
+											"value": "@activity('getConfigFiles').output.firstRow.secretName",
+											"type": "Expression"
+										},
+										"file_name": {
+											"value": "@item().FileName",
+											"type": "Expression"
+										},
+										"folder_name": {
+											"value": "@activity('getConfigFiles').output.firstRow.targetFolder",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"name": "getConfigFiles",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "Json1",
+						"type": "DatasetReference",
+						"parameters": {
+							"secret_name": {
+								"value": "@pipeline().parameters.look_up_secret_name",
+								"type": "Expression"
+							}
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"look_up_secret_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-06-07T14:06:38Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

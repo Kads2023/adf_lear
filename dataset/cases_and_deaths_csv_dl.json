@@ -1,0 +1,31 @@
+{
+	"name": "cases_and_deaths_csv_dl",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "shargegaintrialsa_link",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"secret_name": {
+					"value": "sharegaintrialsa-accountkey",
+					"type": "Expression"
+				}
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "cases_deaths.csv",
+				"folderPath": "raw",
+				"fileSystem": "input-data"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
